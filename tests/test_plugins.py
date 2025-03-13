@@ -1,5 +1,5 @@
 # type: ignore
-import pytest 
+import pytest
 import math
 from unittest.mock import patch, ANY
 import importlib
@@ -23,9 +23,16 @@ def test_square_root_error():
     # Test with invalid input (negative number should work but produce a complex number)
     with patch('builtins.input', return_value='-4'), patch('builtins.print') as mock_print:
         execute()
-        # The square root of -4 is 2j
-        # Check that it handled this properly
-        mock_print.assert_any_call('The square root of -4.0 is 2j')
+        # The square root of -4 is a complex number (should print this properly)
+        mock_print.assert_any_call('The square root of -4.0 is 2j')  # Handling complex results for negative numbers
+
+def test_square_root_invalid_input():
+    """Test for invalid input in square_root (non-numeric input)."""
+    from app.plugins.square_root import execute
+    
+    with patch('builtins.input', return_value='abc'), patch('builtins.print') as mock_print:
+        execute()
+        mock_print.assert_any_call('Error: Invalid input for square root. Please enter a valid number.')
 
 # Test for factorial functionality
 def test_factorial_calculation():
@@ -52,8 +59,16 @@ def test_factorial_negative():
     # Test with negative number
     with patch('builtins.input', return_value='-5'), patch('builtins.print') as mock_print:
         execute()
-        # Should print an error message
+        # Check if the correct error message was printed
         mock_print.assert_any_call('Factorial is not defined for negative numbers.')
+
+def test_factorial_invalid_input():
+    """Test for invalid input in factorial (non-numeric input)."""
+    from app.plugins.factorial import execute
+    
+    with patch('builtins.input', return_value='abc'), patch('builtins.print') as mock_print:
+        execute()
+        mock_print.assert_any_call('Error: Invalid input for factorial. Please enter a valid number.')
 
 # Test plugin listing functionality
 def test_list_plugins():
