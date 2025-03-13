@@ -34,7 +34,7 @@ class CalculatorREPL(cmd.Cmd):
             print("History cleared.")
             self.display_menu()
         elif line == '5':
-            print("Exiting calculator. Thank you for using!")
+            print("Exiting calculator... Thank you!")
             return True
         else:
             print("Invalid choice, please select a valid option.")

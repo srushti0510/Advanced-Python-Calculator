@@ -1,4 +1,4 @@
-import pandas as pd
+import pandas as pd  # type: ignore
 import os
 
 history_file = 'data/history.csv'
@@ -15,6 +15,7 @@ def load_history():
             return pd.DataFrame(columns=['operation', 'x', 'y', 'result'])
     else:
         print("History file not found, creating a new one.")
+        os.makedirs(os.path.dirname(history_file), exist_ok=True)  # Create data directory if it doesn't exist
         return pd.DataFrame(columns=['operation', 'x', 'y', 'result'])
 
 def save_history(operation, x, y, result):
@@ -35,6 +36,7 @@ def save_history(operation, x, y, result):
     print(f"Updated history to save:\n{history}")
     
     # Save the updated history to the CSV file
+    os.makedirs(os.path.dirname(history_file), exist_ok=True)  # Ensure directory exists
     history.to_csv(history_file, index=False)
     print(f"History saved successfully to {history_file}")
 
@@ -58,3 +60,9 @@ def print_history():
     else:
         print("Calculation History:")
         print(history)
+
+# New function for single-input operations
+def save_single_input_history(operation, x, result):
+    """Saves a calculation with only one input to history."""
+    # For single input operations, we'll use None for the y value
+    save_history(operation, x, None, result)
