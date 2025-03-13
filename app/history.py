@@ -18,10 +18,24 @@ def load_history():
         os.makedirs(os.path.dirname(history_file), exist_ok=True)  # Create data directory if it doesn't exist
         return pd.DataFrame(columns=['operation', 'x', 'y', 'result'])
 
+import pandas as pd
+import os
+
+history_file = 'data/history.csv'
+
 def save_history(operation, x, y, result):
     """Saves a new calculation to the CSV history file."""
-    history = load_history()  # Load current history (could be empty if no data exists)
     
+    # Check if result is valid (not None or invalid type)
+    if result is None:
+        raise ValueError("Result cannot be None.")
+    
+    if not isinstance(result, (int, float)):  # Ensure result is a valid number
+        raise ValueError("Result must be a valid number (int or float).")
+    
+    # Load current history (could be empty if no data exists)
+    history = load_history()
+
     # Debugging: Show what is being saved
     print(f"Saving new history record: {operation} with x={x}, y={y}, result={result}")
     
@@ -35,10 +49,13 @@ def save_history(operation, x, y, result):
     # Debugging: Print updated history before saving
     print(f"Updated history to save:\n{history}")
     
+    # Ensure the directory exists
+    os.makedirs(os.path.dirname(history_file), exist_ok=True)
+    
     # Save the updated history to the CSV file
-    os.makedirs(os.path.dirname(history_file), exist_ok=True)  # Ensure directory exists
     history.to_csv(history_file, index=False)
     print(f"History saved successfully to {history_file}")
+
 
 def clear_history():
     """Clears the entire history (empties the CSV file without deleting it)."""
