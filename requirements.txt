@@ -9,4 +9,3 @@ pytz==2025.1
 six==1.17.0
 tzdata==2025.1
 pytest-cov==6.0.0
-flake8==7.1.2
