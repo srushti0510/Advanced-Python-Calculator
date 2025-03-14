@@ -8,4 +8,7 @@ python-dateutil==2.9.0.post0
 pytz==2025.1
 six==1.17.0
 tzdata==2025.1
- pytest-cov==6.0.0
+pytest-cov==6.0.0
+flake8==7.1.2 
+pycodestyle-2.12.1 
+pyflakes-3.2.0
