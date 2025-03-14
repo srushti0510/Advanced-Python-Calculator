@@ -1,7 +1,6 @@
-# app/commands.py
 import cmd
 from app.arithmetic import add, subtract, multiply, divide
-from app.history import load_history, save_history, print_history, clear_history
+from app.history import load_history, save_history, print_history, clear_history, delete_history, delete_specific_history
 from app.plugins import list_plugins, load_plugin  # Import the functions from plugins.py
 
 class CalculatorREPL(cmd.Cmd):
@@ -17,9 +16,10 @@ class CalculatorREPL(cmd.Cmd):
         print("Select an option from the menu below:")
         print("1. Basic Arithmetic Operations")
         print("2. View History")
-        print("3. Advanced Features")  # "Advanced Features" includes plugins
-        print("4. Clear History")
-        print("5. Exit\n")
+        print("3. Advanced Features")  # Advanced Features menu for plugins
+        print("4. Delete History")  # Single option for deleting history
+        print("5. Clear History")
+        print("6. Exit\n")
 
     def default(self, line):
         """Override the default behavior to handle menu choices."""
@@ -28,17 +28,39 @@ class CalculatorREPL(cmd.Cmd):
         elif line == '2':
             self.view_history()
         elif line == '3':
-            self.load_plugins()  # Allow loading advanced features (plugins)
+            self.load_plugins()  # Go to advanced features (plugins)
         elif line == '4':
+            self.delete_history_prompt()  # Go to delete history submenu
+        elif line == '5':
             clear_history()
             print("History cleared.")
             self.display_menu()
-        elif line == '5':
+        elif line == '6':
             print("Exiting calculator... Thank you!")
             return True
         else:
             print("Invalid choice, please select a valid option.")
             self.display_menu()
+
+    def delete_history_prompt(self):
+        """Prompt the user for an option to delete history."""
+        print("\nSelect an option to delete history:")
+        print("1. Delete All History")
+        print("2. Delete Specific History")
+        choice = input("Choose an option (1 or 2): ")
+        
+        if choice == '1':
+            delete_history()  # Delete all history
+        elif choice == '2':
+            self.delete_specific_history_prompt()  # Delete specific history record
+        else:
+            print("Invalid choice, going back to main menu.")
+            self.display_menu()
+
+    def delete_specific_history_prompt(self):
+        """Prompt the user for an operation to delete from the history."""
+        operation = input("Enter the operation (e.g., 'add') to delete from history: ")
+        delete_specific_history(operation)  # Call the delete function for specific records
 
     def show_arithmetic_menu(self):
         """Display the arithmetic operations menu."""

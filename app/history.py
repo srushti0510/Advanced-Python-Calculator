@@ -18,11 +18,6 @@ def load_history():
         os.makedirs(os.path.dirname(history_file), exist_ok=True)  # Create data directory if it doesn't exist
         return pd.DataFrame(columns=['operation', 'x', 'y', 'result'])
 
-import pandas as pd
-import os
-
-history_file = 'data/history.csv'
-
 def save_history(operation, x, y, result):
     """Saves a new calculation to the CSV history file."""
     
@@ -56,7 +51,6 @@ def save_history(operation, x, y, result):
     history.to_csv(history_file, index=False)
     print(f"History saved successfully to {history_file}")
 
-
 def clear_history():
     """Clears the entire history (empties the CSV file without deleting it)."""
     if os.path.exists(history_file):
@@ -78,6 +72,27 @@ def print_history():
         print("Calculation History:")
         print(history)
 
+def delete_history():
+    """Deletes all history records from the CSV file."""
+    if os.path.exists(history_file):
+        empty_history = pd.DataFrame(columns=['operation', 'x', 'y', 'result'])
+        empty_history.to_csv(history_file, index=False)  # Clear the CSV file
+        print(f"History has been deleted. {history_file} is now empty.")
+    else:
+        print(f"History file {history_file} does not exist.")
+
+def delete_specific_history(operation):
+    """Deletes specific records based on operation."""
+    history = load_history()  # Load current history
+
+    updated_history = history[history['operation'] != operation]  # Filter out the operation
+
+    if len(updated_history) == len(history):
+        print(f"No records found for operation: {operation}")
+    else:
+        updated_history.to_csv(history_file, index=False)  # Save the filtered history back to CSV
+        print(f"Deleted all records for operation: {operation}")
+        
 # New function for single-input operations
 def save_single_input_history(operation, x, result):
     """Saves a calculation with only one input to history."""
