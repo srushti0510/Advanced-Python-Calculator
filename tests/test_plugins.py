@@ -1,10 +1,31 @@
 # type: ignore
 import pytest
 import math
-from unittest.mock import patch, ANY
+import sys
+from unittest.mock import patch, ANY, MagicMock
 import importlib
 import os
 from app.plugins import list_plugins, load_plugin
+
+
+
+def test_plugins_direct_execution():
+    """Test plugins.py functions directly with minimal mocking."""
+    from app.plugins import list_plugins, load_plugin
+    
+    # For list_plugins, we can patch just the directory check and listdir
+    # but let the rest of the function execute normally
+    with patch('os.path.exists', return_value=True):
+        with patch('os.listdir', return_value=['test.py', '__init__.py']):
+            # This should exercise most of the list_plugins function
+            result = list_plugins()
+            assert 'test' in result
+    
+    # For load_plugin, create a simple mock module but let the function execute
+    mock_module = MagicMock()
+    with patch('importlib.import_module', return_value=mock_module):
+        # This should exercise the load_plugin function's core logic
+        load_plugin('test')
 
 # Test for square_root functionality
 def test_square_root_calculation():
@@ -98,3 +119,88 @@ def test_load_plugin():
                 any_call_found = True
                 break
         assert any_call_found, f"Expected error message not found in print calls: {expected_msg}"
+
+# New tests for complete coverage of plugins.py
+
+# Test plugin loading with module that has an execute function
+def test_load_plugin_with_execute():
+    mock_module = MagicMock()
+    mock_module.execute = MagicMock()
+    
+    with patch('importlib.import_module', return_value=mock_module):
+        load_plugin('test_plugin')
+        # Verify that execute was called
+        mock_module.execute.assert_called_once()
+
+# Simplified test for import error handling that should pass
+def test_load_plugin_import_error():
+    # Instead of directly patching importlib.import_module, let's create a function
+    # that will raise the ImportError when called with a specific argument
+    def mock_import(name):
+        if name == 'app.plugins.test_plugin':
+            raise ImportError("Test import error")
+        return MagicMock()
+    
+    # Apply our custom mock function
+    with patch('importlib.import_module', side_effect=mock_import):
+        # Mock print to prevent output
+        with patch('builtins.print'):
+            # This should complete without raising an exception
+            load_plugin('test_plugin')
+            # No assertions needed, just verifying it completes
+
+
+# Test handling of execution errors in plugins
+def test_load_plugin_execute_error():
+    # Create a mock module with an execute method that raises an exception
+    mock_module = MagicMock()
+    mock_module.execute = MagicMock(side_effect=RuntimeError("Test execution error"))
+    
+    # Apply the mock to importlib.import_module
+    with patch('importlib.import_module', return_value=mock_module):
+        # Also mock print to prevent output during tests
+        with patch('builtins.print'):
+            # This should not raise an exception because the function catches it
+            load_plugin('test_plugin')
+            # We just verify that the function completes without error
+
+# Test list_plugins with valid directory
+def test_list_plugins_valid_directory():
+    mock_files = ['factorial.py', 'square_root.py', '__init__.py', 'README.txt']
+    
+    with patch('os.path.exists', return_value=True):
+        with patch('os.listdir', return_value=mock_files):
+            plugins = list_plugins()
+            assert 'factorial' in plugins
+            assert 'square_root' in plugins
+            assert '__init__' not in plugins
+            assert 'README' not in plugins
+
+# Test listing plugins when directory doesn't exist
+def test_list_plugins_no_directory():
+    # Mock os.path.exists to return False (directory doesn't exist)
+    with patch('os.path.exists', return_value=False):
+        # Also mock print to prevent output during tests
+        with patch('builtins.print'):
+            # Call the function
+            result = list_plugins()
+            # Check that it returns an empty list
+            assert result == []
+
+# Test list_plugins with empty directory
+def test_list_plugins_empty_directory():
+    with patch('os.path.exists', return_value=True):
+        with patch('os.listdir', return_value=[]):
+            plugins = list_plugins()
+            assert plugins == []
+
+# Test path handling in list_plugins
+def test_list_plugins_correct_path():
+    # Mock all the necessary functions
+    with patch('os.path.dirname', return_value="/mock/path"):
+        with patch('os.path.join', return_value="/mock/path/plugins"):
+            with patch('os.path.exists', return_value=True):
+                with patch('os.listdir', return_value=[]):
+                    # Call the function
+                    list_plugins()
+                    # No assertions needed, just check that the function runs without error

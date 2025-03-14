@@ -1,6 +1,6 @@
 import cmd
 from app.arithmetic import add, subtract, multiply, divide
-from app.history import load_history, save_history, print_history, clear_history, delete_history, delete_specific_history
+from app.history import save_history, print_history, clear_history, delete_history, delete_specific_history
 from app.plugins import list_plugins, load_plugin  # Import the functions from plugins.py
 
 class CalculatorREPL(cmd.Cmd):
@@ -73,13 +73,13 @@ class CalculatorREPL(cmd.Cmd):
 
         operation = input("Choose an operation (1-5): ")
         if operation == '1':
-            self.do_add(input("Enter two numbers separated by space: "))
+            self.do_add(input("Enter two numbers separated by space:"))
         elif operation == '2':
-            self.do_subtract(input("Enter two numbers separated by space: "))
+            self.do_subtract(input("Enter two numbers separated by space:"))
         elif operation == '3':
-            self.do_multiply(input("Enter two numbers separated by space: "))
+            self.do_multiply(input("Enter two numbers separated by space:"))
         elif operation == '4':
-            self.do_divide(input("Enter two numbers separated by space: "))
+            self.do_divide(input("Enter two numbers separated by space:"))
         elif operation == '5':
             self.display_menu()
         else:
@@ -152,7 +152,7 @@ class CalculatorREPL(cmd.Cmd):
                 # Provide a brief description of the plugin
                 print(f"{idx}. {plugin} - {self.get_plugin_description(plugin)}")
 
-            plugin_choice = input("Enter the number of the advanced feature you want to use: ")
+            plugin_choice = input("Enter the number of the advanced feature you want to use:")
             try:
                 plugin_name = plugins_list[int(plugin_choice) - 1]
                 load_plugin(plugin_name)  # Use the imported function

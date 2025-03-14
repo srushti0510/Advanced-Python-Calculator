@@ -9,8 +9,10 @@ def load_plugin(plugin_name):
         
         # Execute the plugin's execute function
         plugin.execute()  # Assumes each plugin has an 'execute' function
+        
     except Exception as e:
         print(f"Error loading plugin {plugin_name}: {e}")
+
 
 
 def list_plugins():

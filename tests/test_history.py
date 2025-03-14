@@ -62,3 +62,18 @@ def test_invalid_save(setup_history_file):
         save_history('add', 5, 3, None)  # Try saving invalid result (None)
 
 
+def test_save_invalid_result(setup_history_file):
+    """Test saving history with invalid result (e.g., None or non-numeric result)."""
+    with pytest.raises(ValueError):
+        save_history('add', 5, 3, None)  # Invalid result
+    with pytest.raises(ValueError):
+        save_history('add', 5, 3, 'invalid')  # Invalid result type (non-numeric)
+
+def test_clear_empty_history(setup_history_file):
+    """Test clearing an already empty history."""
+    clear_history()
+    history = load_history()
+    assert history.empty  # Should still be empty after clearing
+
+
+
